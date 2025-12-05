@@ -1,65 +1,142 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import Link from 'next/link';
+import { Sparkles, CheckCircle, ArrowRight, Play, X } from 'lucide-react';
+import Footer from '@/components/Footer';
+
+function Feature({ text }: { text: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="flex items-center justify-center sm:justify-start gap-3">
+      <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
+      <span className="text-gray-800 dark:text-gray-200 font-semibold text-sm sm:text-base">{text}</span>
     </div>
+  );
+}
+
+function StatCard({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <p className="text-xl sm:text-2xl md:text-3xl font-black text-gradient">{value}</p>
+      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">{label}</p>
+    </div>
+  );
+}
+
+// Video Modal Component
+function VideoModal({ show, onClose }: { show: boolean; onClose: () => void }) {
+  if (!show) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            MyWeekly App Demo
+          </h3>
+          <button
+            onClick={onClose}
+            aria-label="Close demo video"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <video
+          className="w-full rounded-lg"
+          controls
+          autoPlay
+          muted
+        >
+          <source src="/videos/demo.mp4" type="video/mp4" />
+          Your browser doesn't support the video tag.
+        </video>
+      </div>
+    </div>
+  );
+}
+
+export default function HomePage() {
+  const [showVideo, setShowVideo] = useState(false);
+
+  return (
+    <>
+      <div className="min-h-screen flex items-center justify-center gradient-light px-4 py-8 sm:py-12">
+        <div className="card max-w-4xl w-full text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl mb-4 sm:mb-6 shadow-lg mx-auto">
+            <Sparkles className="text-white" size={28} />
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4">
+            Fast. Simple. Stay on Track.         </h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-xl mx-auto">
+            Keep your work organized and your week on track—without the hassle.          </p>
+          <div className="space-y-3 mb-6 sm:mb-8 max-w-md mx-auto">
+            <Feature text="No Credit Card Required" />
+            <Feature text="Free Forever" />
+            <Feature text="Setup in 30 Seconds" />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6">
+            <Link
+              href="/register"
+              className="btn btn-primary flex items-center justify-center gap-2 text-sm sm:text-base">
+              Start Free Today
+              <ArrowRight size={18} />
+            </Link>
+            <Link
+              href="/login"
+              className="btn btn-secondary flex items-center justify-center gap-2 text-sm sm:text-base">
+              Login
+            </Link>
+          </div>
+
+          {/* Demo Video Preview */}
+          <div className="my-6 sm:my-8">
+            <div
+              className="relative rounded-xl overflow-hidden border-2 border-gray-300 dark:border-gray-700 cursor-pointer group shadow-lg hover:shadow-xl transition-shadow"
+              onClick={() => setShowVideo(true)}
+            >
+              <div className="relative aspect-video">
+                <img
+                  src="/images/demo.1.png"
+                  alt="MyWeekly app dashboard preview showing weekly planning interface"
+                  className="w-full h-full object-cover"
+                />
+
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/90 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-2xl">
+                    <Play className="w-8 h-8 text-purple-600 ml-1" />
+                  </div>
+                </div>
+
+                <div className="absolute bottom-4 left-4 bg-black/70 text-white text-sm px-3 py-1.5 rounded-lg">
+                  Watch Demo
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Video Modal */}
+          <VideoModal show={showVideo} onClose={() => setShowVideo(false)} />
+
+          <div className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 rounded-xl p-4 sm:p-6 mb-6 border border-gray-200 dark:border-gray-800">
+            <p className="text-gray-700 dark:text-gray-300 italic text-sm sm:text-base">
+              "This app cut my weekly reporting time from 30 minutes to 5. Game changer for me!"
+            </p>
+            <p className="text-right text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2">
+              — Bayan Lulu
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+            <StatCard value="100%" label="Free Forever" />
+            <StatCard value="5min" label="Per Report" />
+            <StatCard value="30s" label="Setup Time" />
+          </div>
+        </div>
+      </div>
+
+      <Footer />
+    </>
   );
 }
