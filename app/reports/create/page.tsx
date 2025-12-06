@@ -279,6 +279,9 @@ function CreateReportContent() {
       const endpoint = isEditingDraft ? `/api/reports/${editId}` : '/api/reports';
       const method = isEditingDraft ? 'PUT' : 'POST';
 
+      // console.log(' Submitting to:', endpoint);
+      // console.log(' Method:', method);
+
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -297,16 +300,36 @@ function CreateReportContent() {
 
       if (response.ok) {
         const data = await response.json();
+        // console.log(' API Success! Data:', data);
         
         if (status === 'draft') {
           if (isEditingDraft) {
-            toast.success('Draft updated successfully!');
+            console.log('🔄 Updating existing draft...');
+            toast.success('Draft updated successfully!', {
+              duration: 2000,
+              position: 'top-right'
+            });
           } else {
-            toast.success('Report saved as draft!');
+            console.log('💾 Saving new draft...');
+            toast.success('Report saved as draft!', {
+              duration: 2000,
+              position: 'top-right'
+            });
           }
           
           // Show draft saved modal with options
-          showDraftSavedModal(data.report._id);
+          console.log('📋 Report ID from API:', data.report?._id);
+          
+          if (data.report?._id) {
+            // Wait a moment then show the modal
+            setTimeout(() => {
+              console.log('🪟 Showing draft saved modal...');
+              showDraftSavedModal(data.report._id);
+            }, 500);
+          } else {
+            console.error('❌ No report ID in response!', data);
+            toast.error('Saved but could not get report ID');
+          }
           
         } else {
           toast.success('Report submitted successfully!');
@@ -317,83 +340,236 @@ function CreateReportContent() {
         toast.error(error.error || 'Failed to save report');
       }
     } catch (error) {
+      console.error('Submit error:', error);
       toast.error('Something went wrong');
     } finally {
       setLoading(false);
     }
   };
 
-  const showDraftSavedModal = (reportId: string) => {
-    toast.custom((t) => (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 border border-gray-200 dark:border-gray-700 max-w-md w-full">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-            <Save className="text-blue-600 dark:text-blue-400" size={24} />
+  // const showDraftSavedModal = (reportId: string) => {
+  //   console.log('🪟 Creating draft modal with ID:', reportId);
+    
+  //   // Create a more visible modal
+  //   const modalId = toast.custom(
+  //     (t) => (
+  //       <div 
+  //         className={`bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 border-2 border-blue-300 dark:border-blue-700 max-w-md w-full transform transition-all duration-300 ${
+  //           t.visible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-4 opacity-0 scale-95'
+  //         }`}
+  //         style={{
+  //           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+  //           zIndex: 99999
+  //         }}
+  //       >
+  //         <div className="flex items-center justify-between mb-6">
+  //           <div className="flex items-center gap-3">
+  //             <div className="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-xl">
+  //               <Save className="text-blue-600 dark:text-blue-400" size={26} />
+  //             </div>
+  //             <div>
+  //               <h3 className="font-bold text-gray-900 dark:text-white text-xl">🎉 Draft Saved!</h3>
+  //               <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
+  //                 Your work is safe. Choose next action:
+  //               </p>
+  //             </div>
+  //           </div>
+  //           <button
+  //             onClick={() => toast.dismiss(t.id)}
+  //             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+  //           >
+  //             <X size={20} />
+  //           </button>
+  //         </div>
+          
+  //         <div className="space-y-3">
+  //           <button
+  //             onClick={() => {
+  //               console.log('📝 Continuing editing...');
+  //               toast.dismiss(t.id);
+  //               router.push(`/reports/create?edit=${reportId}`);
+  //             }}
+  //             className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-900/30 dark:hover:to-blue-800/20 rounded-xl transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 group"
+  //           >
+  //             <div className="flex items-center gap-3">
+  //               <Edit size={20} className="text-blue-600 dark:text-blue-400" />
+  //               <div className="text-left">
+  //                 <div className="font-semibold text-blue-700 dark:text-blue-300">Continue Editing</div>
+  //                 <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Make more changes</div>
+  //               </div>
+  //             </div>
+  //             <ChevronRight size={18} className="text-blue-500" />
+  //           </button>
+            
+  //           <button
+  //             onClick={() => {
+  //               console.log('👁️ Previewing draft...');
+  //               toast.dismiss(t.id);
+  //               router.push(`/reports/${reportId}`);
+  //             }}
+  //             className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 hover:from-green-100 hover:to-green-200 dark:hover:from-green-900/30 dark:hover:to-green-800/20 rounded-xl transition-all duration-200 border-2 border-green-200 dark:border-green-700 hover:border-green-300 dark:hover:border-green-600 group"
+  //           >
+  //             <div className="flex items-center gap-3">
+  //               <Eye size={20} className="text-green-600 dark:text-green-400" />
+  //               <div className="text-left">
+  //                 <div className="font-semibold text-green-700 dark:text-green-300">Preview Draft</div>
+  //                 <div className="text-xs text-green-600/70 dark:text-green-400/70">View how it looks</div>
+  //               </div>
+  //             </div>
+  //             <ChevronRight size={18} className="text-green-500" />
+  //           </button>
+            
+  //           <button
+  //             onClick={() => {
+  //               console.log('📚 Viewing all drafts...');
+  //               toast.dismiss(t.id);
+  //               router.push('/reports?status=draft');
+  //             }}
+  //             className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700/50 hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600/50 rounded-xl transition-all duration-200 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 group"
+  //           >
+  //             <div className="flex items-center gap-3">
+  //               <Clock size={20} className="text-gray-600 dark:text-gray-400" />
+  //               <div className="text-left">
+  //                 <div className="font-semibold text-gray-700 dark:text-gray-300">View All Drafts</div>
+  //                 <div className="text-xs text-gray-600/70 dark:text-gray-400/70">See all saved drafts</div>
+  //               </div>
+  //             </div>
+  //             <ChevronRight size={18} className="text-gray-500" />
+  //           </button>
+  //         </div>
+          
+  //         <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+  //           <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+  //             ⏰ Drafts auto-save. You can return anytime.
+  //           </p>
+  //         </div>
+  //       </div>
+  //     ),
+  //     {
+  //       duration: 15000, // 15 seconds
+  //       position: 'top-right',
+  //       id: `draft-modal-${Date.now()}`,
+  //     }
+  //   );
+    
+  //   console.log('✅ Modal created with ID:', modalId);
+  //   return modalId;
+  // };
+const showDraftSavedModal = (reportId: string) => {
+  console.log('🪟 Creating draft modal with ID:', reportId);
+  
+  // First, dismiss any existing toasts
+  toast.dismiss();
+  
+  // Create a very visible modal
+  const modalId = toast.custom(
+    (t) => (
+      <div 
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 border-4 border-blue-400 dark:border-blue-600 max-w-md w-full"
+        style={{
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          zIndex: 99999,
+          position: 'fixed' as const,
+          top: '20px',
+          right: '20px',
+          opacity: 1,
+          visibility: 'visible',
+          transform: 'translateY(0)',
+        }}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-xl">
+              <Save className="text-blue-600 dark:text-blue-400" size={26} />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-white text-xl">🎉 Draft Saved!</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
+                Your work is safe. Choose next action:
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-gray-900 dark:text-white">Draft Saved!</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              What would you like to do next?
-            </p>
-          </div>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          >
+            <X size={20} />
+          </button>
         </div>
         
         <div className="space-y-3">
           <button
             onClick={() => {
+              console.log('📝 Continuing editing...');
               toast.dismiss(t.id);
               router.push(`/reports/create?edit=${reportId}`);
             }}
-            className="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors group"
+            className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-900/30 dark:hover:to-blue-800/20 rounded-xl transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 group"
           >
             <div className="flex items-center gap-3">
-              <Edit size={18} className="text-blue-600 dark:text-blue-400" />
-              <span className="font-medium text-blue-700 dark:text-blue-300">Continue Editing</span>
+              <Edit size={20} className="text-blue-600 dark:text-blue-400" />
+              <div className="text-left">
+                <div className="font-semibold text-blue-700 dark:text-blue-300">Continue Editing</div>
+                <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Make more changes</div>
+              </div>
             </div>
-            <Clock size={16} className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight size={18} className="text-blue-500" />
           </button>
           
           <button
             onClick={() => {
+              console.log('👁️ Previewing draft...');
               toast.dismiss(t.id);
               router.push(`/reports/${reportId}`);
             }}
-            className="w-full flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors group"
+            className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 hover:from-green-100 hover:to-green-200 dark:hover:from-green-900/30 dark:hover:to-green-800/20 rounded-xl transition-all duration-200 border-2 border-green-200 dark:border-green-700 hover:border-green-300 dark:hover:border-green-600 group"
           >
             <div className="flex items-center gap-3">
-              <Eye size={18} className="text-green-600 dark:text-green-400" />
-              <span className="font-medium text-green-700 dark:text-green-300">Preview Draft</span>
+              <Eye size={20} className="text-green-600 dark:text-green-400" />
+              <div className="text-left">
+                <div className="font-semibold text-green-700 dark:text-green-300">Preview Draft</div>
+                <div className="text-xs text-green-600/70 dark:text-green-400/70">View how it looks</div>
+              </div>
             </div>
-            <Clock size={16} className="text-green-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight size={18} className="text-green-500" />
           </button>
           
           <button
             onClick={() => {
+              console.log('📚 Viewing all drafts...');
               toast.dismiss(t.id);
               router.push('/reports?status=draft');
             }}
-            className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors group"
+            className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700/50 hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600/50 rounded-xl transition-all duration-200 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 group"
           >
             <div className="flex items-center gap-3">
-              <Clock size={18} className="text-gray-600 dark:text-gray-400" />
-              <span className="font-medium text-gray-700 dark:text-gray-300">View All Drafts</span>
+              <Clock size={20} className="text-gray-600 dark:text-gray-400" />
+              <div className="text-left">
+                <div className="font-semibold text-gray-700 dark:text-gray-300">View All Drafts</div>
+                <div className="text-xs text-gray-600/70 dark:text-gray-400/70">See all saved drafts</div>
+              </div>
             </div>
-            <ChevronRight size={16} className="text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight size={18} className="text-gray-500" />
           </button>
         </div>
         
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
           <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            Drafts are saved automatically. You can return anytime to complete.
+            ⏰ Drafts auto-save. You can return anytime.
           </p>
         </div>
       </div>
-    ), {
-      duration: 10000,
-      position: 'top-right'
-    });
-  };
-
+    ),
+    {
+      duration: 15000, // 15 seconds
+      position: 'top-right',
+      id: `draft-modal-${Date.now()}`,
+    }
+  );
+  
+  console.log('✅ Modal created with ID:', modalId);
+  return modalId;
+};
   const deleteDraft = async () => {
     if (!isEditingDraft || !editId) return;
     
@@ -957,6 +1133,8 @@ function CreateReportContent() {
             </div>
           </div>
         </div>
+
+
       </div>
     </div>
   );
