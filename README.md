@@ -20,7 +20,7 @@ A beautiful, full-stack application for creating, managing, and exporting weekly
 6. **Overall Summary** - Quick weekly overview
 
 ### 🚀 **Tech Stack**
-- **Frontend**: Next.js 14, React 19, TypeScript
+- **Frontend**: Next.js 16, React 18, TypeScript
 - **Styling**: Tailwind CSS 3, Custom CSS with dark mode
 - **Backend**: Next.js API Routes, Node.js
 - **Database**: MongoDB with Mongoose ODM
